@@ -5,6 +5,11 @@ public class App {
 
         SpaceConfig spaceConfig = SpaceConfig.getInstance();
 
-        System.out.println("Hello, World!");
+        while(true){
+
+            System.out.println("Hello, World!");
+        }
+
+
     }
 }

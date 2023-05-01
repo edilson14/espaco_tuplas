@@ -6,19 +6,19 @@ import net.jini.core.entry.Entry;
 
 
 public class Ambiente  implements Entry {
-    public Integer ambienteId;
+    public Integer ambienteId = 0;
     public List<Dispositive> dispositives;
     public List<User> users;
 
     public String ambienteName = "amb";
 
 
-    Ambiente(){}
+    public  Ambiente(Integer id){
 
-    Ambiente(Integer id){
-        this.ambienteId = id;
         this.ambienteName += id.toString();
         this.dispositives = new ArrayList<Dispositive>();
         this.users = new ArrayList<User>();
     }
+
+
 }
