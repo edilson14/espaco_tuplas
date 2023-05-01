@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="jini-ext">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/jini-ext.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
