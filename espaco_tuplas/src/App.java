@@ -1,14 +1,15 @@
 import config.SpaceConfig;
+import ui.UserInterface;
+
+import javax.swing.*;
 
 public class App {
     public static void main(String[] args)  {
 
-        SpaceConfig spaceConfig = SpaceConfig.getInstance();
+//        SpaceConfig spaceConfig = SpaceConfig.getInstance();
 
-        while(true){
+        UserInterface userInterface = new UserInterface();
 
-            System.out.println("Hello, World!");
-        }
 
 
     }

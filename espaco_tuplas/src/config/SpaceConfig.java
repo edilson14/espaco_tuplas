@@ -59,11 +59,12 @@ public class SpaceConfig {
 
     }
 
-    public Ambiente getAmbientes() throws UnusableEntryException, TransactionException, RemoteException, InterruptedException {
-        final int oneMinute = 60*1000;
-        Ambiente ambiente = new Ambiente(lastAmbienteId);
-
-        space.read(ambiente,null,oneMinute);
-    }
+//    public Ambiente getAmbientes()  {
+//        final int oneMinute = 60*1000;
+//        Ambiente ambiente = new Ambiente(lastAmbienteId);
+//
+//        space.read(ambiente,null,oneMinute);
+//        return ;
+//    }
 
 }
