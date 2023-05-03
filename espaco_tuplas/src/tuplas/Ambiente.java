@@ -12,9 +12,10 @@ public class Ambiente  implements Entry {
 
     public String ambienteName = "amb";
 
+    public Ambiente(){}
+
 
     public  Ambiente(Integer id){
-
         this.ambienteName += id.toString();
         this.dispositives = new ArrayList<Dispositive>();
         this.users = new ArrayList<User>();

@@ -7,11 +7,11 @@ public class Dispositive implements Entry{
     public String name ="disp";
 
 
-    Dispositive(){
+    public Dispositive(){
         
     }
 
-    Dispositive(Integer id){
+    public Dispositive(Integer id){
         this.deviceId = id;
         this.name += id.toString();
     }

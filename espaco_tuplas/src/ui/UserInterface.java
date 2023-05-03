@@ -1,5 +1,6 @@
 package ui;
 
+import config.SpaceConfig;
 import tuplas.Ambiente;
 import tuplas.Dispositive;
 import tuplas.User;
@@ -14,8 +15,6 @@ import java.util.HashMap;
 public class UserInterface {
     private JFrame frame;
     private JPanel panel;
-    private JButton criarAmbienteBtn;
-    private JButton criarDispositivoBtn;
     private JButton criarUsuarioBtn;
     private JButton destruirAmbienteBtn;
     private JButton listarDispositivosBtn;
@@ -34,7 +33,12 @@ public class UserInterface {
     private HashMap<String, Dispositive> dispositivoPorNome;
     private HashMap<String, User> usuarioPorNome;
 
+    private SpaceConfig spaceConfig;
+
+
+
     public UserInterface(){
+         spaceConfig = SpaceConfig.getInstance();
         // Cria o JFrame
         frame = new JFrame("ESPAÇOS DE TUPLAS");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -42,31 +46,13 @@ public class UserInterface {
 
         panel = new JPanel(new GridLayout(5,2));
 
-        // Cria os botões
-        criarAmbienteBtn = new JButton("Criar Ambiente");
-        criarDispositivoBtn = new JButton("Criar Dispositivo");
-        criarUsuarioBtn = new JButton("Criar Usuário");
-        destruirAmbienteBtn = new JButton("Destruir Ambiente");
-        listarDispositivosBtn = new JButton("Listar Dispositivos");
-        listarUsuariosBtn = new JButton("Listar Usuários");
-        moverDispositivoBtn = new JButton("Mover Dispositivo");
-        moverUsuarioBtn = new JButton("Mover Usuário");
+
 
 
 
         // Adiciona os eventos de clique aos botões
-        criarAmbienteBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                criarAmbiente();
-            }
-        });
-        criarDispositivoBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                criarDispositivo();
-            }
-        });
+
+
         criarUsuarioBtn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -106,9 +92,9 @@ public class UserInterface {
 
 
         // Cria os JComboBoxes
-        ambientes = new ArrayList<>();
-        dispositivos = new ArrayList<>();
-        usuarios = new ArrayList<>();
+        ambientes = new ArrayList<Ambiente>();
+        dispositivos = new ArrayList<Dispositive>();
+        usuarios = new ArrayList<User>();
         ambientePorNome = new HashMap<>();
         dispositivoPorNome = new HashMap<>();
         usuarioPorNome = new HashMap<>();
@@ -121,7 +107,7 @@ public class UserInterface {
         // Adiciona os componentes ao JPanel
         panel.add(new JLabel("Ambientes:"));
         panel.add(ambientesComboBox);
-        panel.add(criarAmbienteBtn);
+        panel.add(createAmbienteButton());
         panel.add(destruirAmbienteBtn);
         panel.add(new JLabel("Dispositivos:"));
         panel.add(dispositivosComboBox);
@@ -129,7 +115,7 @@ public class UserInterface {
         panel.add(moverDispositivoBtn);
         panel.add(new JLabel("Usuários:"));
         panel.add(usuariosComboBox);
-        panel.add(criarDispositivoBtn);
+        panel.add(createDevice());
         panel.add(criarUsuarioBtn);
         panel.add(listarUsuariosBtn);
         panel.add(moverUsuarioBtn);
@@ -141,16 +127,86 @@ public class UserInterface {
     }
 
 
-    private void criarAmbiente() {
-        // Implementação da criação de ambiente
+    private void criarAmbiente()  {
+        try{
+        Ambiente ambiente = new Ambiente(1);
+        spaceConfig.createAmbiente(ambiente);
+        ambientes.add(ambiente);
+//        ambientesComboBox.add();
+
+        }catch (Exception e ){
+            System.out.println("Algo deu errado na interface criando ambiente");
+        }
+    }
+
+
+
+
+
+    private JButton createAmbienteButton(){
+        JButton createambiente = new JButton("Criar Ambiente");
+        createambiente.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    criarAmbiente();
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        return createambiente;
+    }
+
+    private JButton createDevice(){
+        JButton button = new JButton("Criar Dispositivo");
+        button.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                criarDispositivo();
+            }
+        });
+        return button;
+    }
+
+
+    private JButton [] createButtons(){
+        JButton[] allButtons  = new JButton[8];
+        // Cria os botões
+        criarUsuarioBtn = new JButton("Criar Usuário");
+        destruirAmbienteBtn = new JButton("Destruir Ambiente");
+        listarDispositivosBtn = new JButton("Listar Dispositivos");
+        listarUsuariosBtn = new JButton("Listar Usuários");
+        moverDispositivoBtn = new JButton("Mover Dispositivo");
+        moverUsuarioBtn = new JButton("Mover Usuário");
+
+
+
+        return allButtons;
+
     }
 
     private void criarDispositivo() {
+        try{
+            Dispositive dispositive = new Dispositive(1);
+            spaceConfig.creatDispoitive(dispositive);
+            dispositivos.add(dispositive);
+
+        }catch (Exception e ){
+            System.out.println("Algo deu errado na interface criando dispositivo");
+        }
         // Implementação da criação de dispositivo
     }
 
     private void criarUsuario() {
-        // Implementação da criação de usuário
+        try{
+            User user = new User(1);
+            spaceConfig.createUser(user);
+            usuarios.add(user);
+
+        }catch (Exception e ){
+            System.out.println("Algo deu errado na interface criando user");
+        }
     }
 
     private void destruirAmbiente() {
@@ -172,8 +228,4 @@ public class UserInterface {
     private void moverUsuario() {
         // Implementação da movimentação de usuário
     }
-
-
-
-
 }

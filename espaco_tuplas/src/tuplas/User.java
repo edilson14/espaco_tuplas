@@ -7,11 +7,11 @@ public class User implements Entry {
     public Integer ambienteId;
     public String username = "user";
 
-    User(){
+    public User(){
 
     }
 
-    User(Integer id){
-       this.username += id.toString();
+    public User(Integer id){
+        this.username += id.toString();
     }
 }

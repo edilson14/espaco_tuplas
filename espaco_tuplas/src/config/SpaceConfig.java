@@ -1,10 +1,11 @@
 package config;
 
-import net.jini.core.entry.UnusableEntryException;
 import net.jini.core.lease.Lease;
 import net.jini.core.transaction.TransactionException;
 import net.jini.space.*;
 import tuplas.Ambiente;
+import tuplas.Dispositive;
+import tuplas.User;
 
 import java.rmi.RemoteException;
 
@@ -47,10 +48,11 @@ public class SpaceConfig {
 
 
 
-    private void createAmbiente(Ambiente ambiente) throws TransactionException, RemoteException {
+    public void createAmbiente(Ambiente ambiente) throws TransactionException, RemoteException {
 
         try{
             space.write(ambiente,null, Lease.FOREVER);
+            System.out.println("ambiente criado");
         } catch (Exception e){
             System.out.println("Algo deu errado criando ambiente");
             e.printStackTrace();
@@ -59,12 +61,27 @@ public class SpaceConfig {
 
     }
 
-//    public Ambiente getAmbientes()  {
-//        final int oneMinute = 60*1000;
-//        Ambiente ambiente = new Ambiente(lastAmbienteId);
-//
-//        space.read(ambiente,null,oneMinute);
-//        return ;
-//    }
+    public void creatDispoitive(Dispositive dispositive) throws TransactionException,RemoteException{
+        try{
+            space.write(dispositive,null,Lease.FOREVER);
+            System.out.println("Dispositivo criado");
+        }
+        catch (Exception e){
+            System.out.println("Algo deu errado criando dispositivo");
+            e.printStackTrace();
+            throw  e;
+        }
+    }
+
+    //
+    public void createUser(User user) throws TransactionException,RemoteException {
+        try{
+            space.write(user,null,Lease.FOREVER);
+            System.out.println("Usuario adicionado com sucesso");
+        }catch (Exception e){
+            System.out.println("Algo deu errado na criação do usuário");
+            throw e;
+        }
+    }
 
 }
