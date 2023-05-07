@@ -1,5 +1,5 @@
 package tuplas;
-import net.jini.core.entry.*;
+import net.jini.core.entry.Entry;
 
 public class Dispositive implements Entry{
     public Integer ambienteid;

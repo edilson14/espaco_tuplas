@@ -8,14 +8,15 @@ import tuplas.Dispositive;
 import tuplas.User;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class SpaceConfig {
 
     private JavaSpace space;
     private static SpaceConfig instance;
-    private Integer lastAmbienteId = 1;
-
+    private List<Ambiente> ambienteList = new ArrayList<Ambiente>();
 
     private  SpaceConfig(){
         this.findSpace();
@@ -52,6 +53,7 @@ public class SpaceConfig {
 
         try{
             space.write(ambiente,null, Lease.FOREVER);
+            ambienteList.add(ambiente);
             System.out.println("ambiente criado");
         } catch (Exception e){
             System.out.println("Algo deu errado criando ambiente");

@@ -1,256 +1,67 @@
 package ui;
-//
-//import config.SpaceConfig;
-//import tuplas.Ambiente;
-//import tuplas.Dispositive;
-//import tuplas.User;
-//
-//import javax.swing.*;
-//import java.awt.*;
-//import java.awt.event.ActionEvent;
-//import java.awt.event.ActionListener;
-//import java.util.ArrayList;
-//import java.util.HashMap;
-//
-//public class UserInterface {
-//    private JFrame frame;
-//    private JPanel panel;
-//    private JComboBox<String> ambientesComboBox;
-//    private JComboBox<String> dispositivosComboBox;
-//    private JComboBox<String> usuariosComboBox;
-//
-//    // Estruturas de dados para armazenar informações do sistema
-//    private ArrayList<Ambiente> ambientes;
-//    private ArrayList<Dispositive> dispositivos;
-//    private ArrayList<User> usuarios;
-//    private HashMap<String, Ambiente> ambientePorNome;
-//    private HashMap<String, Dispositive> dispositivoPorNome;
-//    private HashMap<String, User> usuarioPorNome;
-//
-//    private SpaceConfig spaceConfig;
-//
-//
-//
-//    public UserInterface(){
-////         spaceConfig = SpaceConfig.getInstance();
-//        // Cria o JFrame
-//        frame = new JFrame("ESPAÇOS DE TUPLAS");
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        frame.setSize(400, 400);
-//
-//        panel = new JPanel(new GridLayout(5,2));
-//
-//
-//
-//
-//        // Cria os JComboBoxes
-//        ambientes = new ArrayList<Ambiente>();
-//        dispositivos = new ArrayList<Dispositive>();
-//        usuarios = new ArrayList<User>();
-//        ambientePorNome = new HashMap<>();
-//        dispositivoPorNome = new HashMap<>();
-//        usuarioPorNome = new HashMap<>();
-//        ambientesComboBox = new JComboBox<>();
-//        dispositivosComboBox = new JComboBox<>();
-//        usuariosComboBox = new JComboBox<>();
-//
-//
-//
-//        // Adiciona os componentes ao JPanel
-//        panel.add(new JLabel("Ambientes:"));
-//        panel.add(ambientesComboBox);
-//        panel.add(createAmbienteButton());
-//        panel.add(deleteAmbienteButton());
-//        panel.add(new JLabel("Dispositivos:"));
-//        panel.add(dispositivosComboBox);
-//        panel.add(listDevicesButton());
-//        panel.add(moveDevicesButton());
-//        panel.add(new JLabel("Usuários:"));
-//        panel.add(usuariosComboBox);
-//        panel.add(createDevice());
-//        panel.add(createUserButton());
-//        panel.add(listUsersButton());
-//        panel.add(moveUserButton());
-//
-//
-//        frame.add(panel);
-//
-//        frame.setVisible(true);
-//    }
-//
-//
-//    private void criarAmbiente()  {
-//        try{
-//        Ambiente ambiente = new Ambiente(1);
-//        spaceConfig.createAmbiente(ambiente);
-//        ambientes.add(ambiente);
-////        ambientesComboBox.add();
-//
-//        }catch (Exception e ){
-//            System.out.println("Algo deu errado na interface criando ambiente");
-//        }
-//    }
-//    private JButton createAmbienteButton(){
-//        JButton createambiente = new JButton("Criar Ambiente");
-//        createambiente.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                try {
-//                    criarAmbiente();
-//                } catch (Exception ex) {
-//                    throw new RuntimeException(ex);
-//                }
-//            }
-//        });
-//        return createambiente;
-//    }
-//
-//    private JButton createDevice(){
-//        JButton button = new JButton("Criar Dispositivo");
-//        button.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                criarDispositivo();
-//            }
-//        });
-//        return button;
-//    }
-//
-//    private JButton createUserButton(){
-//        JButton button = new JButton("Criar Usuário");
-//        button.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                criarUsuario();
-//            }
-//        });
-//
-//        return  button;
-//    }
-//
-//
-//    private JButton deleteAmbienteButton(){
-//        JButton button = new JButton("Distruir Ambiente");
-//        button.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                destruirAmbiente();
-//            }
-//        });
-//
-//        return button;
-//    }
-//
-//    private JButton listDevicesButton(){
-//        JButton button = new JButton("Listar Dispositivos");
-//        button.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                listarDispositivos();
-//            }
-//        });
-//
-//        return button;
-//    }
-//
-//    private JButton listUsersButton(){
-//        JButton button = new JButton("Listar Usuários");
-//        button.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                listarUsuarios();
-//            }
-//        });
-//
-//        return button;
-//    }
-//
-//    private JButton moveDevicesButton(){
-//        JButton button = new JButton("Mover Dispositivos");
-//        button.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                moverDispositivo();
-//            }
-//        });
-//
-//        return button;
-//    }
-//    private JButton moveUserButton(){
-//        JButton button = new JButton("Mover Usuário");
-//        button.addActionListener(new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                moverUsuario();
-//            }
-//        });
-//
-//        return button;
-//    }
-//
-//
-//
-//    private void criarDispositivo() {
-//        try{
-//            Dispositive dispositive = new Dispositive(1);
-//            spaceConfig.creatDispoitive(dispositive);
-//            dispositivos.add(dispositive);
-//
-//        }catch (Exception e ){
-//            System.out.println("Algo deu errado na interface criando dispositivo");
-//        }
-//    }
-//
-//    private void criarUsuario() {
-//        try{
-//            User user = new User(1);
-//            spaceConfig.createUser(user);
-//            usuarios.add(user);
-//
-//        }catch (Exception e ){
-//            System.out.println("Algo deu errado na interface criando user");
-//        }
-//    }
-//
-//    private void destruirAmbiente() {
-//        // Implementação da destruição de ambiente
-//    }
-//
-//    private void listarDispositivos() {
-//        // Implementação da listagem de dispositivos
-//    }
-//
-//    private void listarUsuarios() {
-//        // Implementação da listagem de usuários
-//    }
-//
-//    private void moverDispositivo() {
-//        // Implementação da movimentação de dispositivo
-//    }
-//
-//    private void moverUsuario() {
-//        // Implementação da movimentação de usuário
-//    }
-//}
+
+import tuplas.Ambiente;
+import config.SpaceConfig;
+import tuplas.Dispositive;
+import tuplas.User;
+
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class UserInterface extends JFrame {
 
     private JButton createEnvButton, createUserButton, createDeviceButton;
+    private SpaceConfig spaceConfig;
     private JButton removeUserButton, removeDeviceButton;
     private JList<String> envList, userList, deviceList;
 
+    private DefaultListModel<String> envNames = new DefaultListModel<String>();
+    private DefaultListModel<String> devicesNames = new DefaultListModel<String>();
+    private DefaultListModel<String> usersNames = new DefaultListModel<String>();
+    private Integer lastEnvNumber =1;
+    private Integer lastDeviceNumber = 1;
+    private Integer lastUserNumber = 1;
+
+//    {
+//        envNames = new String[]
+//    }
+
     public UserInterface() {
-        super("Minha Aplicação");
+        super("Espaço de Tuplas");
+        spaceConfig = SpaceConfig.getInstance();
 
         // cria os botões
         createEnvButton = new JButton("Criar Ambiente");
-        createUserButton = new JButton("Criar Usuário");
+        createEnvButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                criarAmbiente();
+            }
+        });
         createDeviceButton = new JButton("Criar Dispositivo");
+        createDeviceButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createDevice();
+            }
+        });
+
+        createUserButton = new JButton("Criar Usuário");
+
+        createUserButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createUser();
+            }
+        });
+
+
 
         removeUserButton = new JButton("Remover Usuário");
         removeUserButton.setEnabled(false);
@@ -259,9 +70,9 @@ public class UserInterface extends JFrame {
         removeDeviceButton.setEnabled(false);
 
         // cria as listas
-        envList = new JList<String>(new String[]{"Ambiente 1", "Ambiente 2", "Ambiente 3"});
-        userList = new JList<String>(new String[]{"Usuário 1", "Usuário 2", "Usuário 3"});
-        deviceList = new JList<String>(new String[]{"Dispositivo 1", "Dispositivo 2", "Dispositivo 3"});
+        envList = new JList<String>(envNames);
+        deviceList = new JList<String>(devicesNames);
+        userList = new JList<String>(usersNames);
 
         // cria um painel para os botões
         JPanel buttonPanel = new JPanel(new GridLayout(1, 3));
@@ -380,4 +191,44 @@ public class UserInterface extends JFrame {
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
+
+        private void criarAmbiente()  {
+         try{
+            Ambiente ambiente = new Ambiente(lastEnvNumber);
+            spaceConfig.createAmbiente(ambiente);
+            envNames.add(envNames.size() ,ambiente.ambienteName);
+            lastEnvNumber +=1;
+
+        }catch (Exception e ){
+            System.out.println("Algo deu errado na interface criando ambiente");
+            e.printStackTrace();
+         }
+    }
+
+
+    private void createDevice(){
+        try{
+            Dispositive dispositive = new Dispositive(lastDeviceNumber);
+            spaceConfig.creatDispoitive(dispositive);
+            devicesNames.add(devicesNames.size(),dispositive.name);
+            lastDeviceNumber +=1;
+        }
+        catch (Exception e){
+            System.out.println("Algo deu errado criando dispositivo");
+        }
+    }
+
+    private void createUser(){
+try{
+    User user = new User(lastUserNumber);
+    spaceConfig.createUser(user);
+    usersNames.add(usersNames.size(),user.username);
+    lastUserNumber+=1;
+    }
+catch (Exception e){
+
+    System.out.println("Algo deu errado criando usuario");
+    e.printStackTrace();
+}
+}
 }
