@@ -16,9 +16,9 @@ import java.awt.event.MouseEvent;
 
 public class UserInterface extends JFrame {
 
-    private JButton createEnvButton, createUserButton, createDeviceButton;
+    private JButton createEnvButton, createUserButton, createDeviceButton,deleteDeviceButton,deleteUserButtom;
     private SpaceConfig spaceConfig;
-    private JButton removeUserButton, removeDeviceButton;
+//    private JButton removeUserButton, removeDeviceButton;
     private JList<String> envList, userList, deviceList;
 
     private DefaultListModel<String> envNames = new DefaultListModel<String>();
@@ -28,9 +28,6 @@ public class UserInterface extends JFrame {
     private Integer lastDeviceNumber = 1;
     private Integer lastUserNumber = 1;
 
-//    {
-//        envNames = new String[]
-//    }
 
     public UserInterface() {
         super("Espaço de Tuplas");
@@ -61,13 +58,9 @@ public class UserInterface extends JFrame {
             }
         });
 
+        deleteDevice();
+        deleteUser();
 
-
-        removeUserButton = new JButton("Remover Usuário");
-        removeUserButton.setEnabled(false);
-
-        removeDeviceButton = new JButton("Remover Dispositivo");
-        removeDeviceButton.setEnabled(false);
 
         // cria as listas
         envList = new JList<String>(envNames);
@@ -77,14 +70,14 @@ public class UserInterface extends JFrame {
         // cria um painel para os botões
         JPanel buttonPanel = new JPanel(new GridLayout(1, 3));
         buttonPanel.add(createEnvButton);
-        buttonPanel.add(createUserButton);
         buttonPanel.add(createDeviceButton);
+        buttonPanel.add(createUserButton);
 
         // cria um painel para as listas
         JPanel listPanel = new JPanel(new GridLayout(1, 3));
         listPanel.add(createListPanel(envList, "Ambientes", null));
-        listPanel.add(createListPanel(userList, "Usuários", removeUserButton));
-        listPanel.add(createListPanel(deviceList, "Dispositivos", removeDeviceButton));
+        listPanel.add(createListPanel(deviceList, "Dispositivos", deleteDeviceButton));
+        listPanel.add(createListPanel(userList, "Usuários", deleteUserButtom));
 
         // adiciona um ouvinte para o clique em um item da lista de ambientes
         envList.addMouseListener(new MouseAdapter() {
@@ -100,42 +93,16 @@ public class UserInterface extends JFrame {
         });
 
         // adiciona um ouvinte para o clique no botão Remover Usuário
-        removeUserButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String selectedUser = userList.getSelectedValue();
-                String selectedEnv = envList.getSelectedValue();
-                if (selectedUser != null && selectedEnv != null) {
-                    // remove o usuário do ambiente e atualiza a lista
-                    System.out.println("Removendo usuário " + selectedUser + " do ambiente " + selectedEnv);
-                    DefaultListModel<String> model = (DefaultListModel<String>) userList.getModel();
-                    model.removeElement(selectedUser);
-                    removeUserButton.setEnabled(false);
-                }
-            }
-        });
         // adiciona um ouvinte para o clique no botão Remover Dispositivo
-        removeDeviceButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String selectedDevice = deviceList.getSelectedValue();
-                String selectedEnv = envList.getSelectedValue();
-                if (selectedDevice != null && selectedEnv != null) {
-                    // remove o dispositivo do ambiente e atualiza a lista
-                    System.out.println("Removendo dispositivo " + selectedDevice + " do ambiente " + selectedEnv);
-                    DefaultListModel<String> model = (DefaultListModel<String>) deviceList.getModel();
-                    model.removeElement(selectedDevice);
-                    removeDeviceButton.setEnabled(false);
-                }
-            }
-        });
 
         // adiciona um ouvinte para o clique na lista de usuários
         userList.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 // habilita o botão Remover Usuário se um usuário estiver selecionado
                 if (userList.getSelectedValue() != null) {
-                    removeUserButton.setEnabled(true);
+                    deleteUserButtom.setEnabled(true);
                 } else {
-                    removeUserButton.setEnabled(false);
+                    deleteUserButtom.setEnabled(false);
                 }
             }
         });
@@ -145,9 +112,9 @@ public class UserInterface extends JFrame {
             @Override
             public void valueChanged(ListSelectionEvent listSelectionEvent) {
                 if (deviceList.getSelectedValue() != null) {
-                    removeDeviceButton.setEnabled(true);
+                    deleteDeviceButton.setEnabled(true);
                 } else {
-                    removeDeviceButton.setEnabled(false);
+                    deleteDeviceButton.setEnabled(false);
                 }
 
             }
@@ -218,17 +185,54 @@ public class UserInterface extends JFrame {
         }
     }
 
-    private void createUser(){
-try{
-    User user = new User(lastUserNumber);
-    spaceConfig.createUser(user);
-    usersNames.add(usersNames.size(),user.username);
-    lastUserNumber+=1;
-    }
-catch (Exception e){
+    private void deleteDevice(){
+        deleteDeviceButton = new JButton("Apagar Dispositivo");
+        deleteDeviceButton.setEnabled(false);
 
-    System.out.println("Algo deu errado criando usuario");
-    e.printStackTrace();
-}
-}
+        deleteDeviceButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedDevice = deviceList.getSelectedValue();
+                if(selectedDevice != null){
+                    spaceConfig.apagarDispositivo(selectedDevice);
+                    devicesNames.removeElement(selectedDevice);
+                    System.out.println(selectedDevice);
+                }
+            }
+        });
+    }
+
+    private void createUser(){
+        try{
+            User user = new User(lastUserNumber);
+            spaceConfig.createUser(user);
+            usersNames.add(usersNames.size(),user.username);
+            lastUserNumber+=1;
+            }
+        catch (Exception e){
+
+            System.out.println("Algo deu errado criando usuario");
+            e.printStackTrace();
+        }
+    }
+
+    private void deleteUser(){
+        deleteUserButtom = new JButton("Apagar Usuário");
+        deleteUserButtom.setEnabled(false);
+
+        deleteUserButtom.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedUser = userList.getSelectedValue();
+                if(selectedUser != null){
+                    spaceConfig.apagarUsuario(selectedUser);
+                    usersNames.removeElement(selectedUser);
+                    System.out.println(selectedUser);
+                }
+            }
+        });
+    }
+
+
+
 }

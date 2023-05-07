@@ -17,6 +17,8 @@ public class SpaceConfig {
     private JavaSpace space;
     private static SpaceConfig instance;
     private List<Ambiente> ambienteList = new ArrayList<Ambiente>();
+    private List<User> userList = new ArrayList<User>();
+    private List<Dispositive> dispositiveList = new ArrayList<Dispositive>();
 
     private  SpaceConfig(){
         this.findSpace();
@@ -66,12 +68,27 @@ public class SpaceConfig {
     public void creatDispoitive(Dispositive dispositive) throws TransactionException,RemoteException{
         try{
             space.write(dispositive,null,Lease.FOREVER);
+            dispositiveList.add(dispositive);
             System.out.println("Dispositivo criado");
         }
         catch (Exception e){
             System.out.println("Algo deu errado criando dispositivo");
             e.printStackTrace();
             throw  e;
+        }
+    }
+
+    public void apagarDispositivo(String name){
+        try{
+            Dispositive dispositive = new Dispositive();
+            dispositive.name = name;
+            space.take(dispositive,null,Lease.FOREVER);
+            dispositiveList.removeIf(dispositive1 -> dispositive1.name.equals(name) && dispositive1.ambienteid == null);
+            System.out.println("Dispositivo apagado");
+        }
+        catch (Exception e){
+            System.out.println("Algo deu Errado");
+            e.printStackTrace();
         }
     }
 
@@ -85,5 +102,20 @@ public class SpaceConfig {
             throw e;
         }
     }
+
+    public void apagarUsuario(String name){
+        try{
+            User user = new User();
+            user.username = name;
+            space.take(user,null,Lease.FOREVER);
+            userList.removeIf(_user -> _user.username.equals(name) && _user.ambienteId == null);
+            System.out.println("Usuario apagado");
+        }
+        catch (Exception e){
+            System.out.println("Algo deu Errado");
+            e.printStackTrace();
+        }
+    }
+
 
 }
