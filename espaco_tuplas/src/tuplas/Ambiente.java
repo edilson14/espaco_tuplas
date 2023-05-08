@@ -7,7 +7,7 @@ import java.util.List;
 
 
 public class Ambiente  implements Entry {
-    public Integer ambienteId = 0;
+    public Integer ambienteId ;
     public List<Dispositive> dispositives;
     public List<User> users;
 
@@ -17,6 +17,7 @@ public class Ambiente  implements Entry {
 
 
     public  Ambiente(Integer id){
+        ambienteId = id;
         this.ambienteName += id.toString();
         this.dispositives = new ArrayList<Dispositive>();
         this.users = new ArrayList<User>();

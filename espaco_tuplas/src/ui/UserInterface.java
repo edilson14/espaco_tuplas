@@ -1,7 +1,7 @@
 package ui;
 
-import tuplas.Ambiente;
 import config.SpaceConfig;
+import tuplas.Ambiente;
 import tuplas.Dispositive;
 import tuplas.User;
 
@@ -18,10 +18,11 @@ public class UserInterface extends JFrame {
 
     private JButton createEnvButton, createUserButton, createDeviceButton,deleteDeviceButton,deleteUserButtom;
     private SpaceConfig spaceConfig;
-//    private JButton removeUserButton, removeDeviceButton;
+    private JButton removeUserButton, removeDeviceButton;
     private JList<String> envList, userList, deviceList;
 
     private DefaultListModel<String> envNames = new DefaultListModel<String>();
+    private  String[] envNamesBox = {};
     private DefaultListModel<String> devicesNames = new DefaultListModel<String>();
     private DefaultListModel<String> usersNames = new DefaultListModel<String>();
     private Integer lastEnvNumber =1;
@@ -121,6 +122,12 @@ public class UserInterface extends JFrame {
 
         });
 
+        deviceList.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
+                deviceClicked(evt);
+            }
+        });
+
         // adiciona os componentes à janela
         Container contentPane = getContentPane();
         contentPane.setLayout(new BorderLayout());
@@ -151,19 +158,22 @@ public class UserInterface extends JFrame {
         JPanel panel = new JPanel(new GridLayout(2, 1));
         JList<String> userList = new JList<String>(users);
         JList<String> deviceList = new JList<String>(devices);
-        panel.add(createListPanel(userList, "Usuários", null));
-        panel.add(createListPanel(deviceList, "Dispositivos", null));
+
+        removeDevice();
+        removeUser();
+        panel.add(createListPanel(userList, "Usuários", removeUserButton));
+        panel.add(createListPanel(deviceList, "Dispositivos", removeDeviceButton));
         dialog.getContentPane().add(panel);
         dialog.pack();
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
 
-        private void criarAmbiente()  {
+    private void criarAmbiente()  {
          try{
             Ambiente ambiente = new Ambiente(lastEnvNumber);
             spaceConfig.createAmbiente(ambiente);
-            envNames.add(envNames.size() ,ambiente.ambienteName);
+             addAmbiente(ambiente.ambienteName);
             lastEnvNumber +=1;
 
         }catch (Exception e ){
@@ -172,12 +182,22 @@ public class UserInterface extends JFrame {
          }
     }
 
+    private void addAmbiente(String name){
+                envNames.add(envNames.size(),name);
+                String[] newEnxBox = new String[envNamesBox.length +1];
+                System.arraycopy(envNamesBox,0,newEnxBox,0,envNamesBox.length);
+                newEnxBox[newEnxBox.length -1] = name;
+                envNamesBox = newEnxBox;
+
+    }
+
 
     private void createDevice(){
         try{
             Dispositive dispositive = new Dispositive(lastDeviceNumber);
             spaceConfig.creatDispoitive(dispositive);
             devicesNames.add(devicesNames.size(),dispositive.name);
+
             lastDeviceNumber +=1;
         }
         catch (Exception e){
@@ -198,6 +218,55 @@ public class UserInterface extends JFrame {
                     devicesNames.removeElement(selectedDevice);
                     System.out.println(selectedDevice);
                 }
+            }
+        });
+    }
+
+    private void deviceClicked(MouseEvent event){
+        if(event.getClickCount() == 2 && event.getButton() == MouseEvent.BUTTON1){
+            // obtém o dispositivo selecionado
+            String selectedDevice = deviceList.getSelectedValue();
+            // cria um diálogo para adicionar o dispositivo a um ambiente
+            JDialog dialog = new JDialog(UserInterface.this, "Adicionar Dispositivo a um Ambiente", true);
+            JPanel panel = new JPanel(new BorderLayout());
+            JComboBox<String> envComboBox = new JComboBox<String>((String[]) envNamesBox);
+//            envComboBox
+            JButton addButton = new JButton("Adicionar");
+            addButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    String selectedEnv = (String) envComboBox.getSelectedItem();
+                    if (selectedEnv != null && selectedDevice != null) {
+                        Ambiente ambiente = spaceConfig.getAmbienteByName(selectedEnv).get();
+                        Dispositive dispositive = spaceConfig.getDispositiveByName(selectedDevice).get();
+                        if(dispositive.ambienteid == null){
+                            try {
+                                spaceConfig.addDeviceToAmbiente(dispositive,ambiente);
+                                System.out.println("Dispositivo adicionado ao Ambiente");
+                                dialog.dispose();
+                            } catch (Exception ex) {
+                                System.out.println("Não foi possivel adicionar dispositivo ao ambiente");
+                                throw new RuntimeException(ex);
+                            }
+                        }
+                    }
+                }
+            });
+            panel.add(envComboBox, BorderLayout.NORTH);
+            panel.add(addButton, BorderLayout.SOUTH);
+            dialog.getContentPane().add(panel);
+            dialog.pack();
+            dialog.setLocationRelativeTo(this);
+            dialog.setVisible(true);
+        }
+    }
+
+    private void removeDevice(){
+        removeDeviceButton = new JButton("Remover Dispositivo");
+        removeDeviceButton.setEnabled(false);
+        removeDeviceButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
             }
         });
     }
@@ -229,6 +298,17 @@ public class UserInterface extends JFrame {
                     usersNames.removeElement(selectedUser);
                     System.out.println(selectedUser);
                 }
+            }
+        });
+    }
+
+    private void removeUser(){
+        removeUserButton = new JButton("Remover Usuario");
+        removeUserButton.setEnabled(false);
+        removeUserButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
             }
         });
     }

@@ -1,5 +1,6 @@
 package config;
 
+import net.jini.core.entry.UnusableEntryException;
 import net.jini.core.lease.Lease;
 import net.jini.core.transaction.TransactionException;
 import net.jini.space.*;
@@ -10,6 +11,7 @@ import tuplas.User;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 public class SpaceConfig {
@@ -65,6 +67,11 @@ public class SpaceConfig {
 
     }
 
+    public Optional<Ambiente> getAmbienteByName(String ambienteName){
+        Optional<Ambiente> ambiente = ambienteList.stream().filter(_ambiente -> _ambiente.ambienteName.equals(ambienteName)).findFirst();
+        return ambiente;
+    }
+
     public void creatDispoitive(Dispositive dispositive) throws TransactionException,RemoteException{
         try{
             space.write(dispositive,null,Lease.FOREVER);
@@ -76,6 +83,27 @@ public class SpaceConfig {
             e.printStackTrace();
             throw  e;
         }
+    }
+
+    public void addDeviceToAmbiente(Dispositive device,Ambiente ambiente) throws UnusableEntryException, TransactionException, RemoteException, InterruptedException {
+        try{
+           Dispositive deviceToAdd = (Dispositive) space.take(device,null,Lease.FOREVER);
+            deviceToAdd.deviceId = device.deviceId;
+            deviceToAdd.ambienteid = ambiente.ambienteId;
+            space.write(deviceToAdd,null,Lease.FOREVER);
+
+
+        }
+        catch (Exception e){
+            System.out.println("Algo deu errado");
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    public Optional<Dispositive> getDispositiveByName(String name){
+        Optional<Dispositive> dispositive = dispositiveList.stream().filter(_dispositive -> _dispositive.name.equals(name)).findFirst();
+        return dispositive;
     }
 
     public void apagarDispositivo(String name){
