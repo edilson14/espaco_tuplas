@@ -124,6 +124,7 @@ public class SpaceConfig {
     public void createUser(User user) throws TransactionException,RemoteException {
         try{
             space.write(user,null,Lease.FOREVER);
+            userList.add(userList.size(),user);
             System.out.println("Usuario adicionado com sucesso");
         }catch (Exception e){
             System.out.println("Algo deu errado na criação do usuário");
@@ -142,6 +143,25 @@ public class SpaceConfig {
         catch (Exception e){
             System.out.println("Algo deu Errado");
             e.printStackTrace();
+        }
+    }
+
+    public Optional<User> getUserByName(String name){
+        Optional<User> user = userList.stream().filter(_user -> _user.username.equals(name)).findFirst();
+        return user;
+    }
+
+    public void addUserAmbiente(User user,Ambiente ambiente) throws UnusableEntryException, TransactionException, RemoteException, InterruptedException {
+        try{
+            User userToAdd = (User) space.take(user,null,Lease.FOREVER);
+            userToAdd.userId = user.userId;
+            userToAdd.ambienteId = ambiente.ambienteId;
+            space.write(userToAdd,null,Lease.FOREVER);
+        }
+        catch (Exception e){
+            System.out.println("Algo deu errado");
+            e.printStackTrace();
+            throw e;
         }
     }
 

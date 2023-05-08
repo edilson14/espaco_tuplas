@@ -12,6 +12,8 @@ public class User implements Entry {
     }
 
     public User(Integer id){
+        this.userId = id;
         this.username += id.toString();
+
     }
 }

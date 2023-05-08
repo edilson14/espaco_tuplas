@@ -5,10 +5,21 @@ import tuplas.Ambiente;
 import tuplas.Dispositive;
 import tuplas.User;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -93,8 +104,6 @@ public class UserInterface extends JFrame {
             }
         });
 
-        // adiciona um ouvinte para o clique no botão Remover Usuário
-        // adiciona um ouvinte para o clique no botão Remover Dispositivo
 
         // adiciona um ouvinte para o clique na lista de usuários
         userList.addListSelectionListener(new ListSelectionListener() {
@@ -125,6 +134,13 @@ public class UserInterface extends JFrame {
         deviceList.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
                 deviceClicked(evt);
+            }
+        });
+
+        userList.addMouseListener(new MouseAdapter() {
+
+            public void mouseClicked(MouseEvent event){
+                userClicked(event);
             }
         });
 
@@ -183,12 +199,11 @@ public class UserInterface extends JFrame {
     }
 
     private void addAmbiente(String name){
-                envNames.add(envNames.size(),name);
-                String[] newEnxBox = new String[envNamesBox.length +1];
-                System.arraycopy(envNamesBox,0,newEnxBox,0,envNamesBox.length);
-                newEnxBox[newEnxBox.length -1] = name;
-                envNamesBox = newEnxBox;
-
+        envNames.add(envNames.size(),name);
+        String[] newEnxBox = new String[envNamesBox.length +1];
+        System.arraycopy(envNamesBox,0,newEnxBox,0,envNamesBox.length);
+        newEnxBox[newEnxBox.length -1] = name;
+        envNamesBox = newEnxBox;
     }
 
 
@@ -260,6 +275,9 @@ public class UserInterface extends JFrame {
         }
     }
 
+
+
+
     private void removeDevice(){
         removeDeviceButton = new JButton("Remover Dispositivo");
         removeDeviceButton.setEnabled(false);
@@ -277,8 +295,7 @@ public class UserInterface extends JFrame {
             spaceConfig.createUser(user);
             usersNames.add(usersNames.size(),user.username);
             lastUserNumber+=1;
-            }
-        catch (Exception e){
+        } catch (Exception e){
 
             System.out.println("Algo deu errado criando usuario");
             e.printStackTrace();
@@ -300,6 +317,39 @@ public class UserInterface extends JFrame {
                 }
             }
         });
+    }
+
+    private void userClicked(MouseEvent event){
+        if(event.getClickCount() == 2 && event.getButton() == MouseEvent.BUTTON1){
+            String selectedUser = userList.getSelectedValue();
+            JDialog dialog = new JDialog(UserInterface.this, "Adicionar Usuaário a um Ambiente", true);
+            JPanel panel = new JPanel(new BorderLayout());
+            JComboBox<String> envComboBox = new JComboBox<String>((String[]) envNamesBox);
+            JButton addButton = new JButton("Adicionar");
+            addButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    String selectedEnv = (String) envComboBox.getSelectedItem();
+                    if (selectedEnv != null && selectedUser != null) {
+                        Ambiente ambiente = spaceConfig.getAmbienteByName(selectedEnv).get();
+                        User user = spaceConfig.getUserByName(selectedUser).get();
+                            try {
+                                spaceConfig.addUserAmbiente(user,ambiente);
+                                System.out.println("Usuário adicionado ao Ambiente");
+                                dialog.dispose();
+                            } catch (Exception ex) {
+                                System.out.println("Não foi possivel adicionar usuario ao ambiente");
+                                throw new RuntimeException(ex);
+                            }
+                    }
+                }
+            });
+            panel.add(envComboBox, BorderLayout.NORTH);
+            panel.add(addButton, BorderLayout.SOUTH);
+            dialog.getContentPane().add(panel);
+            dialog.pack();
+            dialog.setLocationRelativeTo(this);
+            dialog.setVisible(true);
+        }
     }
 
     private void removeUser(){
