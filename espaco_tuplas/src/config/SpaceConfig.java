@@ -12,6 +12,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 public class SpaceConfig {
@@ -87,11 +88,14 @@ public class SpaceConfig {
 
     public void addDeviceToAmbiente(Dispositive device,Ambiente ambiente) throws UnusableEntryException, TransactionException, RemoteException, InterruptedException {
         try{
-           Dispositive deviceToAdd = (Dispositive) space.take(device,null,Lease.FOREVER);
-            deviceToAdd.deviceId = device.deviceId;
-            deviceToAdd.ambienteid = ambiente.ambienteId;
-            space.write(deviceToAdd,null,Lease.FOREVER);
+           int deviceIndex = dispositiveList.indexOf(device);
 
+            Dispositive deviceToAdd = (Dispositive) space.take(device,null,Lease.FOREVER);
+
+           deviceToAdd.deviceId = device.deviceId;
+           deviceToAdd.ambienteid = ambiente.ambienteId;
+           space.write(deviceToAdd,null,Lease.FOREVER);
+            dispositiveList.set(deviceIndex,deviceToAdd);
 
         }
         catch (Exception e){
@@ -153,16 +157,31 @@ public class SpaceConfig {
 
     public void addUserAmbiente(User user,Ambiente ambiente) throws UnusableEntryException, TransactionException, RemoteException, InterruptedException {
         try{
+            int userIndex = userList.indexOf(user);
             User userToAdd = (User) space.take(user,null,Lease.FOREVER);
             userToAdd.userId = user.userId;
             userToAdd.ambienteId = ambiente.ambienteId;
             space.write(userToAdd,null,Lease.FOREVER);
+            userList.set(userIndex,userToAdd);
         }
         catch (Exception e){
             System.out.println("Algo deu errado");
             e.printStackTrace();
             throw e;
         }
+    }
+    public List<User> getUsersByAmbienteId(Integer ambienteId){
+        List<User> allById = new ArrayList();
+        allById = userList.stream().filter(_user -> _user.ambienteId != null && _user.ambienteId.equals(ambienteId)).collect(Collectors.toList());
+
+        return allById;
+    }
+
+    public List<Dispositive> getDevicesByAmbienteId(Integer ambienteId){
+        List<Dispositive> allById = new ArrayList();
+       allById = dispositiveList.stream().filter(_dispositive -> _dispositive.ambienteid != null && _dispositive.ambienteid.equals(ambienteId)).collect(Collectors.toList());
+
+        return allById;
     }
 
 

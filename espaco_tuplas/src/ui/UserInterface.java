@@ -24,6 +24,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserInterface extends JFrame {
 
@@ -35,6 +37,8 @@ public class UserInterface extends JFrame {
     private DefaultListModel<String> envNames = new DefaultListModel<String>();
     private  String[] envNamesBox = {};
     private DefaultListModel<String> devicesNames = new DefaultListModel<String>();
+    private List<Dispositive> dispositives;
+
     private DefaultListModel<String> usersNames = new DefaultListModel<String>();
     private Integer lastEnvNumber =1;
     private Integer lastDeviceNumber = 1;
@@ -44,6 +48,7 @@ public class UserInterface extends JFrame {
     public UserInterface() {
         super("Espaço de Tuplas");
         spaceConfig = SpaceConfig.getInstance();
+        this.dispositives = new ArrayList<Dispositive>();
 
         // cria os botões
         createEnvButton = new JButton("Criar Ambiente");
@@ -95,10 +100,12 @@ public class UserInterface extends JFrame {
         envList.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
                 if (evt.getClickCount() == 2) {
-                    // obtém o ambiente selecionado e mostra uma janela com seus usuários e dispositivos
                     String selectedEnv = envList.getSelectedValue();
-                    String[] users = {"Usuário A", "Usuário B", "Usuário C"};
-                    String[] devices = {"Dispositivo X", "Dispositivo Y", "Dispositivo Z"};
+                    Ambiente ambienteSelected = spaceConfig.getAmbienteByName(selectedEnv).get();
+                    List<Dispositive> allAmbienteDispositives = spaceConfig.getDevicesByAmbienteId(ambienteSelected.ambienteId);
+                    List<User> allAmbienteUsers = spaceConfig.getUsersByAmbienteId(ambienteSelected.ambienteId);
+                    String[] devices = convertToStringArray(allAmbienteDispositives.stream().map(_devices -> _devices.name).toArray());
+                    String[] users = convertToStringArray(allAmbienteUsers.stream().map(_user -> _user.username).toArray());
                     showEnvironmentDetails(selectedEnv, users, devices);
                 }
             }
@@ -363,6 +370,15 @@ public class UserInterface extends JFrame {
         });
     }
 
+
+
+    public static String[] convertToStringArray(Object[] objectArray) {
+        String[] stringArray = new String[objectArray.length];
+        for (int i = 0; i < objectArray.length; i++) {
+            stringArray[i] = objectArray[i].toString();
+        }
+        return stringArray;
+    }
 
 
 }
