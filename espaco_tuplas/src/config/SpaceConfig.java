@@ -124,6 +124,21 @@ public class SpaceConfig {
         }
     }
 
+    public void removeDevicefromAmbiente(Dispositive dispositive){
+        try {
+            Dispositive _dispositive =(Dispositive) space.take(dispositive,null,Lease.FOREVER);
+            if(dispositive != null){
+                _dispositive.ambienteid = null;
+                space.write(_dispositive,null,Lease.FOREVER);
+                System.out.println("Dispositivo Removido do Ambiente");
+            }
+        }
+        catch (Exception e){
+            System.out.println("Algo deu errado");
+            e.printStackTrace();
+        }
+    }
+
     //
     public void createUser(User user) throws TransactionException,RemoteException {
         try{
@@ -146,6 +161,21 @@ public class SpaceConfig {
         }
         catch (Exception e){
             System.out.println("Algo deu Errado");
+            e.printStackTrace();
+        }
+    }
+
+    public void removeUserfromAmbiente(User user){
+        try {
+            User _user =(User) space.take(user,null,Lease.FOREVER);
+            if(_user != null){
+                _user.ambienteId = null;
+                space.write(_user,null,Lease.FOREVER);
+                System.out.println("User Removido do Ambiente");
+            }
+        }
+        catch (Exception e){
+            System.out.println("Algo deu errado");
             e.printStackTrace();
         }
     }

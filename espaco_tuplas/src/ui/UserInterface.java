@@ -32,7 +32,7 @@ public class UserInterface extends JFrame {
     private JButton createEnvButton, createUserButton, createDeviceButton,deleteDeviceButton,deleteUserButtom;
     private SpaceConfig spaceConfig;
     private JButton removeUserButton, removeDeviceButton;
-    private JList<String> envList, userList, deviceList;
+    private JList<String> envList, userList, deviceList , devicesFromSelectedAmbient,usersFromSelectedAmbient;
 
     private DefaultListModel<String> envNames = new DefaultListModel<String>();
     private  String[] envNamesBox = {};
@@ -157,7 +157,6 @@ public class UserInterface extends JFrame {
         contentPane.add(buttonPanel, BorderLayout.NORTH);
         contentPane.add(listPanel, BorderLayout.CENTER);
 
-        // configura o tamanho e visibilidade da janela
         setSize(500, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
@@ -177,14 +176,37 @@ public class UserInterface extends JFrame {
 
     // mostra uma janela com os detalhes do ambiente
     private void showEnvironmentDetails(String env, String[] users, String[] devices) {
+       final String selectedDevice;
         JDialog dialog = new JDialog(this, "Detalhes do Ambiente " + env, true);
         JPanel panel = new JPanel(new GridLayout(2, 1));
-        JList<String> userList = new JList<String>(users);
+         usersFromSelectedAmbient = new JList<String>(users);
         JList<String> deviceList = new JList<String>(devices);
 
-        removeDevice();
-        removeUser();
-        panel.add(createListPanel(userList, "Usuários", removeUserButton));
+        deviceList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if(deviceList.getSelectedValue() != null){
+                    removeDeviceButton.setEnabled(true);
+                }else {
+                    removeDeviceButton.setEnabled(false);
+                }
+            }
+        });
+
+        usersFromSelectedAmbient.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                if(usersFromSelectedAmbient.getSelectedValue() != null){
+                    removeUserButton.setEnabled(true);
+                }else{
+                    removeUserButton.setEnabled(false);
+                }
+            }
+        });
+
+        removeDevice(deviceList);
+        removeUser(userList);
+        panel.add(createListPanel(usersFromSelectedAmbient, "Usuários", removeUserButton));
         panel.add(createListPanel(deviceList, "Dispositivos", removeDeviceButton));
         dialog.getContentPane().add(panel);
         dialog.pack();
@@ -285,13 +307,16 @@ public class UserInterface extends JFrame {
 
 
 
-    private void removeDevice(){
+    private void removeDevice(JList<String> elements){
         removeDeviceButton = new JButton("Remover Dispositivo");
         removeDeviceButton.setEnabled(false);
         removeDeviceButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                Dispositive dispositive = spaceConfig.getDispositiveByName(elements.getSelectedValue()).get();
+                spaceConfig.removeDevicefromAmbiente(dispositive);
+                elements.remove(elements.getSelectedIndex());
+//                System.out.println(elements.getSelectedValue());
             }
         });
     }
@@ -359,13 +384,17 @@ public class UserInterface extends JFrame {
         }
     }
 
-    private void removeUser(){
+    private void removeUser(JList<String> elements){
         removeUserButton = new JButton("Remover Usuario");
         removeUserButton.setEnabled(false);
         removeUserButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
+                User user = spaceConfig.getUserByName(usersFromSelectedAmbient.getSelectedValue()).get();
+                spaceConfig.removeUserfromAmbiente(user);
+                usersFromSelectedAmbient.remove(usersFromSelectedAmbient);
+                usersFromSelectedAmbient.revalidate();
+                System.out.println(elements.getSelectedValue());
             }
         });
     }
@@ -380,5 +409,14 @@ public class UserInterface extends JFrame {
         return stringArray;
     }
 
+
+    private void listenUserAmbienteList(JList<String> list){
+        list.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                removeDeviceButton.setEnabled(true);
+            }
+        });
+    }
 
 }
