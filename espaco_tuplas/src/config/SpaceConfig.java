@@ -6,6 +6,7 @@ import net.jini.core.transaction.TransactionException;
 import net.jini.space.*;
 import tuplas.Ambiente;
 import tuplas.Dispositive;
+import tuplas.Message;
 import tuplas.User;
 
 import java.rmi.RemoteException;
@@ -212,6 +213,19 @@ public class SpaceConfig {
        allById = dispositiveList.stream().filter(_dispositive -> _dispositive.ambienteid != null && _dispositive.ambienteid.equals(ambienteId)).collect(Collectors.toList());
 
         return allById;
+    }
+
+    public void senMessage(Message message){
+        try {
+            space.write(message,null,Lease.FOREVER);
+            System.out.println("Mensagem enviada");
+        } catch (TransactionException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
 

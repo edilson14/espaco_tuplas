@@ -3,28 +3,19 @@ package ui;
 import config.SpaceConfig;
 import tuplas.Ambiente;
 import tuplas.Dispositive;
+import tuplas.Message;
 import tuplas.User;
 
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.BorderLayout;
-import java.awt.Container;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class UserInterface extends JFrame {
@@ -181,6 +172,7 @@ public class UserInterface extends JFrame {
         JPanel panel = new JPanel(new GridLayout(2, 1));
          usersFromSelectedAmbient = new JList<String>(users);
         JList<String> deviceList = new JList<String>(devices);
+        openUserOption(users);
 
         deviceList.addListSelectionListener(new ListSelectionListener() {
             @Override
@@ -418,5 +410,63 @@ public class UserInterface extends JFrame {
             }
         });
     }
+
+
+
+    private void openUserOption(String[] usersFromAmbiente){
+        usersFromSelectedAmbient.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent event){
+                if (SwingUtilities.isRightMouseButton(event)){
+                    String selectedUser = usersFromSelectedAmbient.getSelectedValue();
+                    JPopupMenu popupMenu = new JPopupMenu();
+                    JMenuItem sendMessage = new JMenuItem("Enviar Mensagem");
+                    JMenuItem viewMessage = new JMenuItem("Ver Mensagens");
+                    sendMessage.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            openSendMessage(usersFromAmbiente);
+                        }
+                    });
+
+                    viewMessage.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            showMessages(selectedUser);
+                        }
+                    });
+                    popupMenu.add(sendMessage);
+                    popupMenu.add(viewMessage);
+                    popupMenu.show(usersFromSelectedAmbient,event.getX(),event.getY());
+
+                }
+            }
+        });
+    }
+
+
+    private void openSendMessage(String[] _users){
+
+    String reciever = (String) JOptionPane.showInputDialog(null,"Selecione o destinatario:","Enviar Mensagem",JOptionPane.QUESTION_MESSAGE,null, Arrays.stream(_users).filter(_user -> !_user.equals(usersFromSelectedAmbient.getSelectedValue())).toArray(),_users[0]);
+    if(reciever != null){
+            String messageContent = JOptionPane.showInputDialog(null,"Digite aqui a sua mensagem");
+            if(messageContent != null){
+                User userSender = spaceConfig.getUserByName(usersFromSelectedAmbient.getSelectedValue()).get();
+                User userReciever = spaceConfig.getUserByName(reciever).get();
+                sendMessage(messageContent,userReciever.userId,userSender.ambienteId);
+            }
+        }
+    }
+
+    private void showMessages(String user){
+
+    }
+
+    private void sendMessage(String content,Integer destiny,Integer ambiente){
+        Message message = new Message(destiny,ambiente,content);
+        spaceConfig.senMessage(message);
+     }
+
+
 
 }
