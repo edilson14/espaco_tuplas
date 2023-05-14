@@ -69,6 +69,27 @@ public class SpaceConfig {
 
     }
 
+    public boolean isAmbienteEmpty(Integer ambientId){
+        List<User> userList1 = getUsersByAmbienteId(ambientId);
+        List<Dispositive> dispositives = getDevicesByAmbienteId(ambientId);
+        return  userList1.isEmpty() && dispositives.isEmpty();
+    }
+
+    public void deleteAmbiente(String ambienteName){
+        try {
+            Ambiente ambiente = new Ambiente();
+            ambiente.ambienteName = ambienteName;
+            space.take(ambiente,null,Lease.FOREVER);
+            ambienteList.removeIf(_ambiente -> _ambiente.ambienteName.equals(ambienteName));
+            System.out.println("Ambiente apagado");
+
+        }catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Algo deu errado!");
+        }
+    }
+
+
     public Optional<Ambiente> getAmbienteByName(String ambienteName){
         Optional<Ambiente> ambiente = ambienteList.stream().filter(_ambiente -> _ambiente.ambienteName.equals(ambienteName)).findFirst();
         return ambiente;
@@ -194,6 +215,7 @@ public class SpaceConfig {
             userToAdd.ambienteId = ambiente.ambienteId;
             space.write(userToAdd,null,Lease.FOREVER);
             userList.set(userIndex,userToAdd);
+            listenMessage(user);
         }
         catch (Exception e){
             System.out.println("Algo deu errado");
@@ -226,6 +248,24 @@ public class SpaceConfig {
             e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+
+    public void listenMessage(User user){
+            Message message = new Message();
+            message.destenyId = user.userId;
+            message.ambienteId = user.ambienteId;
+            try {
+                Message _message=(Message) space.take(message,null,Lease.FOREVER);
+                System.out.println(_message);
+            } catch (UnusableEntryException e) {
+                throw new RuntimeException(e);
+            } catch (TransactionException e) {
+                throw new RuntimeException(e);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            } catch (RemoteException e) {
+                throw new RuntimeException(e);
+            }
     }
 
 

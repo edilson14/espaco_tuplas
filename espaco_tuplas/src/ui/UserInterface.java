@@ -20,7 +20,7 @@ import java.util.List;
 
 public class UserInterface extends JFrame {
 
-    private JButton createEnvButton, createUserButton, createDeviceButton,deleteDeviceButton,deleteUserButtom;
+    private JButton createEnvButton, createUserButton, createDeviceButton,deleteAmbienteButton,deleteDeviceButton,deleteUserButtom;
     private SpaceConfig spaceConfig;
     private JButton removeUserButton, removeDeviceButton;
     private JList<String> envList, userList, deviceList , devicesFromSelectedAmbient,usersFromSelectedAmbient;
@@ -43,6 +43,8 @@ public class UserInterface extends JFrame {
 
         // cria os botões
         createEnvButton = new JButton("Criar Ambiente");
+        deleteAmbienteButton = new JButton("Apagar Ambiente");
+        deleteAmbienteButton.setEnabled(false);
         createEnvButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -68,6 +70,7 @@ public class UserInterface extends JFrame {
 
         deleteDevice();
         deleteUser();
+        deleteAmbiente();
 
 
         // cria as listas
@@ -83,7 +86,7 @@ public class UserInterface extends JFrame {
 
         // cria um painel para as listas
         JPanel listPanel = new JPanel(new GridLayout(1, 3));
-        listPanel.add(createListPanel(envList, "Ambientes", null));
+        listPanel.add(createListPanel(envList, "Ambientes", deleteAmbienteButton));
         listPanel.add(createListPanel(deviceList, "Dispositivos", deleteDeviceButton));
         listPanel.add(createListPanel(userList, "Usuários", deleteUserButtom));
 
@@ -99,6 +102,19 @@ public class UserInterface extends JFrame {
                     String[] users = convertToStringArray(allAmbienteUsers.stream().map(_user -> _user.username).toArray());
                     showEnvironmentDetails(selectedEnv, users, devices);
                 }
+            }
+        });
+
+        envList.addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                String selectedEnv = envList.getSelectedValue();
+                if(selectedEnv != null && spaceConfig.isAmbienteEmpty(spaceConfig.getAmbienteByName(selectedEnv).get().ambienteId)){
+                    deleteAmbienteButton.setEnabled(true);
+                } else {
+                    deleteAmbienteButton.setEnabled(false);
+                }
+
             }
         });
 
@@ -128,6 +144,8 @@ public class UserInterface extends JFrame {
             }
 
         });
+
+
 
         deviceList.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent evt) {
@@ -252,7 +270,6 @@ public class UserInterface extends JFrame {
                 if(selectedDevice != null){
                     spaceConfig.apagarDispositivo(selectedDevice);
                     devicesNames.removeElement(selectedDevice);
-                    System.out.println(selectedDevice);
                 }
             }
         });
@@ -297,8 +314,6 @@ public class UserInterface extends JFrame {
     }
 
 
-
-
     private void removeDevice(JList<String> elements){
         removeDeviceButton = new JButton("Remover Dispositivo");
         removeDeviceButton.setEnabled(false);
@@ -338,6 +353,19 @@ public class UserInterface extends JFrame {
                     spaceConfig.apagarUsuario(selectedUser);
                     usersNames.removeElement(selectedUser);
                     System.out.println(selectedUser);
+                }
+            }
+        });
+    }
+
+    private void deleteAmbiente(){
+        deleteAmbienteButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String selectedEnv = envList.getSelectedValue();
+                if(selectedEnv != null && deleteAmbienteButton.isEnabled()){
+                    spaceConfig.deleteAmbiente(selectedEnv);
+                    envNames.removeElement(selectedEnv);
                 }
             }
         });
