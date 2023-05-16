@@ -288,7 +288,6 @@ public class UserInterface extends JFrame {
             JDialog dialog = new JDialog(UserInterface.this, "Adicionar Dispositivo a um Ambiente", true);
             JPanel panel = new JPanel(new BorderLayout());
             JComboBox<String> envComboBox = new JComboBox<String>((String[]) envNamesBox);
-//            envComboBox
             JButton addButton = new JButton("Adicionar");
             addButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
@@ -492,14 +491,21 @@ public class UserInterface extends JFrame {
     }
 
     private void showMessages(String user){
+      User selectedUser = spaceConfig.getUserByName(user).get();
+      List<Message> userMessages = spaceConfig.listenMessage(selectedUser);
+      JDialog dialog = new JDialog(this,"Mensagens",true);
+      JPanel panel = new JPanel(new GridLayout(1,1));
+      JList messages = new JList(userMessages.stream().map(_message -> _message.content).toArray());
 
+      panel.add(createListPanel(messages,"Mensagens",null));
+      dialog.getContentPane().add(panel);
+      dialog.pack();
+      dialog.setLocationRelativeTo(this);
+      dialog.setVisible(true);
     }
 
     private void sendMessage(String content,Integer destiny,Integer ambiente){
         Message message = new Message(destiny,ambiente,content);
         spaceConfig.senMessage(message);
      }
-
-
-
 }

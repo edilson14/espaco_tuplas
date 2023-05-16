@@ -249,13 +249,23 @@ public class SpaceConfig {
         }
     }
 
-    public void listenMessage(User user){
-            Message message = new Message();
+    public List<Message> listenMessage(User user){
+        boolean hasMessage = true;
+        List<Message> messageList = new ArrayList<Message>();
+        Message message = new Message();
             message.destenyId = user.userId;
             message.ambienteId = user.ambienteId;
             try {
-                Message _message=(Message) space.take(message,null,Lease.FOREVER);
-                System.out.println(_message);
+                while (hasMessage){
+                    Message _message=(Message) space.take(message,null,500);
+                    if(_message != null){
+                        messageList.add(_message);
+                        System.out.println(_message);
+                    } else{
+                        hasMessage = false;
+                    }
+                }
+
             } catch (UnusableEntryException e) {
                 throw new RuntimeException(e);
             } catch (TransactionException e) {
@@ -265,6 +275,7 @@ public class SpaceConfig {
             } catch (RemoteException e) {
                 throw new RuntimeException(e);
             }
+        return messageList;
     }
 
 
