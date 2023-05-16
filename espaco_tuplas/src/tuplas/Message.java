@@ -7,11 +7,14 @@ public class Message implements Entry {
     public  String content;
     public Integer ambienteId;
 
+    public String sender;
+
     public Message(){}
 
-    public Message(Integer desteni,Integer ambienteId,String content){
+    public Message(Integer desteni,Integer ambienteId,String content,String sender){
         this.destenyId = desteni;
         this.ambienteId = ambienteId;
         this.content = content;
+        this.sender = sender;
     }
 }

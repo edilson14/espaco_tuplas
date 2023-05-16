@@ -485,7 +485,7 @@ public class UserInterface extends JFrame {
             if(messageContent != null){
                 User userSender = spaceConfig.getUserByName(usersFromSelectedAmbient.getSelectedValue()).get();
                 User userReciever = spaceConfig.getUserByName(reciever).get();
-                sendMessage(messageContent,userReciever.userId,userSender.ambienteId);
+                sendMessage(messageContent,userReciever.userId,userSender.ambienteId,userSender.username);
             }
         }
     }
@@ -493,9 +493,9 @@ public class UserInterface extends JFrame {
     private void showMessages(String user){
       User selectedUser = spaceConfig.getUserByName(user).get();
       List<Message> userMessages = spaceConfig.listenMessage(selectedUser);
-      JDialog dialog = new JDialog(this,"Mensagens",true);
+      JDialog dialog = new JDialog(this,"Mensagens Recebidas",true);
       JPanel panel = new JPanel(new GridLayout(1,1));
-      JList messages = new JList(userMessages.stream().map(_message -> _message.content).toArray());
+      JList messages = new JList(userMessages.stream().map(_message -> _message.sender + ": "+ _message.content).toArray());
 
       panel.add(createListPanel(messages,"Mensagens",null));
       dialog.getContentPane().add(panel);
@@ -504,8 +504,8 @@ public class UserInterface extends JFrame {
       dialog.setVisible(true);
     }
 
-    private void sendMessage(String content,Integer destiny,Integer ambiente){
-        Message message = new Message(destiny,ambiente,content);
+    private void sendMessage(String content,Integer destiny,Integer ambiente,String senderName){
+        Message message = new Message(destiny,ambiente,content,senderName);
         spaceConfig.senMessage(message);
      }
 }
