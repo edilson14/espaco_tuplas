@@ -245,13 +245,18 @@ public class UserInterface extends JFrame {
         envNamesBox = newEnxBox;
     }
 
+    private void removeAmbienteFromEnvBox(String name){
+        List<String> newList = new ArrayList<String>(Arrays.asList(envNamesBox));
+        newList.remove(name);
+        envNamesBox = newList.toArray(new String[0]);
+    }
+
 
     private void createDevice(){
         try{
             Dispositive dispositive = new Dispositive(lastDeviceNumber);
             spaceConfig.creatDispoitive(dispositive);
             devicesNames.add(devicesNames.size(),dispositive.name);
-
             lastDeviceNumber +=1;
         }
         catch (Exception e){
@@ -323,7 +328,6 @@ public class UserInterface extends JFrame {
                 Dispositive dispositive = spaceConfig.getDispositiveByName(elements.getSelectedValue()).get();
                 spaceConfig.removeDevicefromAmbiente(dispositive);
                 elements.remove(elements.getSelectedIndex());
-//                System.out.println(elements.getSelectedValue());
             }
         });
     }
@@ -366,6 +370,7 @@ public class UserInterface extends JFrame {
                 if(selectedEnv != null && deleteAmbienteButton.isEnabled()){
                     spaceConfig.deleteAmbiente(selectedEnv);
                     envNames.removeElement(selectedEnv);
+                    removeAmbienteFromEnvBox(selectedEnv);
                 }
             }
         });

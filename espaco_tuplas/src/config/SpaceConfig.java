@@ -215,7 +215,6 @@ public class SpaceConfig {
             userToAdd.ambienteId = ambiente.ambienteId;
             space.write(userToAdd,null,Lease.FOREVER);
             userList.set(userIndex,userToAdd);
-            listenMessage(user);
         }
         catch (Exception e){
             System.out.println("Algo deu errado");
