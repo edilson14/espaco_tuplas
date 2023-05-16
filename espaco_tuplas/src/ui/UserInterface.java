@@ -100,12 +100,13 @@ public class UserInterface extends JFrame {
                     List<User> allAmbienteUsers = spaceConfig.getUsersByAmbienteId(ambienteSelected.ambienteId);
                     String[] devices = convertToStringArray(allAmbienteDispositives.stream().map(_devices -> _devices.name).toArray());
                     String[] users = convertToStringArray(allAmbienteUsers.stream().map(_user -> _user.username).toArray());
-                    showEnvironmentDetails(selectedEnv, users, devices);
+                    showEnvironmentDetails(selectedEnv,  convertToStringArray(spaceConfig.userList.stream().filter(_user -> _user.ambienteId != null && _user.ambienteId.equals(ambienteSelected.ambienteId)).map(_user -> _user.username).toArray()), devices);
                 }
             }
         });
 
         envList.addListSelectionListener(new ListSelectionListener() {
+
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 String selectedEnv = envList.getSelectedValue();
@@ -115,6 +116,16 @@ public class UserInterface extends JFrame {
                     deleteAmbienteButton.setEnabled(false);
                 }
 
+            }
+
+        });
+
+        envList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(spaceConfig.isAmbienteEmpty(spaceConfig.getAmbienteByName(envList.getSelectedValue()).get().ambienteId)){
+                    deleteAmbienteButton.setEnabled(true);
+                }
             }
         });
 
@@ -140,7 +151,6 @@ public class UserInterface extends JFrame {
                 } else {
                     deleteDeviceButton.setEnabled(false);
                 }
-
             }
 
         });
@@ -186,9 +196,10 @@ public class UserInterface extends JFrame {
     // mostra uma janela com os detalhes do ambiente
     private void showEnvironmentDetails(String env, String[] users, String[] devices) {
        final String selectedDevice;
+        Ambiente ambienteSelected = spaceConfig.getAmbienteByName(env).get();
         JDialog dialog = new JDialog(this, "Detalhes do Ambiente " + env, true);
         JPanel panel = new JPanel(new GridLayout(2, 1));
-         usersFromSelectedAmbient = new JList<String>(users);
+         usersFromSelectedAmbient = new JList<String>(convertToStringArray(spaceConfig.userList.stream().filter(_user -> _user.ambienteId != null && _user.ambienteId.equals(ambienteSelected.ambienteId)).map(_user -> _user.username).toArray()));
         JList<String> deviceList = new JList<String>(devices);
         openUserOption(users);
 
@@ -215,7 +226,7 @@ public class UserInterface extends JFrame {
         });
 
         removeDevice(deviceList);
-        removeUser(userList);
+        removeUser(userList,ambienteSelected.ambienteId);
         panel.add(createListPanel(usersFromSelectedAmbient, "Usuários", removeUserButton));
         panel.add(createListPanel(deviceList, "Dispositivos", removeDeviceButton));
         dialog.getContentPane().add(panel);
@@ -338,7 +349,6 @@ public class UserInterface extends JFrame {
             usersNames.add(usersNames.size(),user.username);
             lastUserNumber+=1;
         } catch (Exception e){
-
             System.out.println("Algo deu errado criando usuario");
             e.printStackTrace();
         }
@@ -355,7 +365,6 @@ public class UserInterface extends JFrame {
                 if(selectedUser != null){
                     spaceConfig.apagarUsuario(selectedUser);
                     usersNames.removeElement(selectedUser);
-                    System.out.println(selectedUser);
                 }
             }
         });
@@ -408,7 +417,7 @@ public class UserInterface extends JFrame {
         }
     }
 
-    private void removeUser(JList<String> elements){
+    private void removeUser(JList<String> elements,Integer ambienteID){
         removeUserButton = new JButton("Remover Usuario");
         removeUserButton.setEnabled(false);
         removeUserButton.addActionListener(new ActionListener() {
@@ -416,12 +425,28 @@ public class UserInterface extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 User user = spaceConfig.getUserByName(usersFromSelectedAmbient.getSelectedValue()).get();
                 spaceConfig.removeUserfromAmbiente(user);
-                usersFromSelectedAmbient.remove(usersFromSelectedAmbient);
-                usersFromSelectedAmbient.revalidate();
-                System.out.println(elements.getSelectedValue());
+                updateUserList(ambienteID);
+//                usersFromSelectedAmbient.remove(usersFromSelectedAmbient.getSelectedIndex());
+
+                usersFromSelectedAmbient.clearSelection();
             }
         });
+
     }
+        private void updateUserList(Integer ambienteId) {
+            // Obter a nova lista de usuários após a remoção
+            String[] updatedUsers = spaceConfig.userList.stream()
+                    .filter(_user -> _user.ambienteId != null && _user.ambienteId.equals(ambienteId))
+                    .map(_user -> _user.username)
+                    .toArray(String[]::new);
+
+            // Atualizar o modelo da lista com a nova lista de usuários
+            DefaultListModel<String> userModel = new DefaultListModel<>();
+            for (String user : updatedUsers) {
+                userModel.addElement(user);
+            }
+            usersFromSelectedAmbient.setModel(userModel);
+        }
 
 
 

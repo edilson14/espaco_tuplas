@@ -21,8 +21,8 @@ public class SpaceConfig {
     private JavaSpace space;
     private static SpaceConfig instance;
     private List<Ambiente> ambienteList = new ArrayList<Ambiente>();
-    private List<User> userList = new ArrayList<User>();
-    private List<Dispositive> dispositiveList = new ArrayList<Dispositive>();
+    public List<User> userList = new ArrayList<User>();
+    public List<Dispositive> dispositiveList = new ArrayList<Dispositive>();
 
     private  SpaceConfig(){
         this.findSpace();
@@ -190,9 +190,11 @@ public class SpaceConfig {
     public void removeUserfromAmbiente(User user){
         try {
             User _user =(User) space.take(user,null,Lease.FOREVER);
+            int index = userList.indexOf(user);
             if(_user != null){
                 _user.ambienteId = null;
                 space.write(_user,null,Lease.FOREVER);
+                userList.set(index,_user);
                 System.out.println("User Removido do Ambiente");
             }
         }
@@ -225,14 +227,12 @@ public class SpaceConfig {
     public List<User> getUsersByAmbienteId(Integer ambienteId){
         List<User> allById = new ArrayList();
         allById = userList.stream().filter(_user -> _user.ambienteId != null && _user.ambienteId.equals(ambienteId)).collect(Collectors.toList());
-
         return allById;
     }
 
     public List<Dispositive> getDevicesByAmbienteId(Integer ambienteId){
         List<Dispositive> allById = new ArrayList();
        allById = dispositiveList.stream().filter(_dispositive -> _dispositive.ambienteid != null && _dispositive.ambienteid.equals(ambienteId)).collect(Collectors.toList());
-
         return allById;
     }
 
