@@ -98,7 +98,7 @@ public class SpaceConfig {
     public void creatDispoitive(Dispositive dispositive) throws TransactionException,RemoteException{
         try{
             space.write(dispositive,null,Lease.FOREVER);
-            dispositiveList.add(dispositive);
+            dispositiveList.add(dispositiveList.size(),dispositive);
             System.out.println("Dispositivo criado");
         }
         catch (Exception e){
@@ -111,13 +111,11 @@ public class SpaceConfig {
     public void addDeviceToAmbiente(Dispositive device,Ambiente ambiente) throws UnusableEntryException, TransactionException, RemoteException, InterruptedException {
         try{
            int deviceIndex = dispositiveList.indexOf(device);
-
-            Dispositive deviceToAdd = (Dispositive) space.take(device,null,Lease.FOREVER);
-
+           Dispositive deviceToAdd = (Dispositive) space.take(device,null,Lease.FOREVER);
            deviceToAdd.deviceId = device.deviceId;
            deviceToAdd.ambienteid = ambiente.ambienteId;
            space.write(deviceToAdd,null,Lease.FOREVER);
-            dispositiveList.set(deviceIndex,deviceToAdd);
+           dispositiveList.set(deviceIndex,deviceToAdd);
 
         }
         catch (Exception e){
@@ -149,9 +147,11 @@ public class SpaceConfig {
     public void removeDevicefromAmbiente(Dispositive dispositive){
         try {
             Dispositive _dispositive =(Dispositive) space.take(dispositive,null,Lease.FOREVER);
+            int index = dispositiveList.indexOf(dispositive);
             if(dispositive != null){
                 _dispositive.ambienteid = null;
                 space.write(_dispositive,null,Lease.FOREVER);
+                dispositiveList.set(index,_dispositive);
                 System.out.println("Dispositivo Removido do Ambiente");
             }
         }
