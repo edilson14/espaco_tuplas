@@ -1,24 +1,44 @@
-# Projeto 4 - Espaço de Tuplas
+# Projeto Final
 
-## Objetivo: Implementar uma aplicação de controle de ambiente ubíquo utilizando Espaço de Tuplas, na qual deve ser fornecida uma interface para gerenciar um conjunto de ambientes, dispositivos e usuários que podem ser inseridos nestes ambientes.
+### Objetivo: Implementar um Sistema de Monitoramento de Mensagens de um Chat
 
-1. Os ambientes devem ser nomeadas de amb1, amb2, amb3, etc. Os dispositivos devem ser  nomeados por disp1, disp2, disp3, etc. Os usuários devem ser nomeados por user1, user2, user3, etc.
-1. Deve ser possível criar ambientes, dispositivos e usuários.
-1. Deve ser possível destruir ambientes que estejam vazios
-1. Deve ser possível listar os dispositivos e usuários que estão em um ambiente.
-1. Deve ser possível mover um dispositivo ou um usuário de um ambiente para outro.
-1. Cada ambiente pode receber diversos dispositivos e usuários
-1. Cada dispositivo ou usuário só pode estar em um único ambiente
-1. Usuários, dentro de um mesmo ambiente, podem trocar mensagens entre si. (3 pontos)
-   Os ambientes, dispositivos e usuários devem ser implementados como Tuplas
+Descrição: Deve ser implementado um sistema de monitoramento de mensagens de um
+chat. Tanto os usuários do chat, como as mensagens, devem ser implementados como
+tuplas em um espaço de tuplas. Deve haver uma tupla especial, denominada espião, que
+vai monitorar todas as mensagens do chat. Sempre que uma mensagem possuir um
+determinado grupo de palavras “suspeitas” o espião deve enviar uma mensagem para o
+mediador alertando esse processo. Essas mensagens devem ser depositadas em um
+tópico em um servidor de Mensagens (MOM), instalado em uma máquina remota,
+sendo que o mediador deve ser um processo que registra interesse nesse tópico e é
+avisado sempre que uma nova notificação chegar. Essa notificação, por sua vez, deve
+ser apresentada na tela do mediador. A Figura 1 apresenta a arquitetura da aplicação.
+
+Obs.:
+• As mensagens do chat devem ser apresentadas na tela de cada usuário.
+• Deve-se garantir que as mensagens sejam extraídas pelos destinatários mas sempre
+passando antes pelo espião.
+• Deve ser possível indicar as palavras suspeitas na interface do espião.
 
 ## Critérios de Avaliação
 
-.Interface do Usuário - UI (0-10)
-. Implementação das Funcionalidades (0-10)
+1. UI do Sistema (0-10)
+2. Chat com Tuplas (0-10)
+3. Comunicação com mediador RMI/RPC (0-10)
+4. Armazenamento MOM (0-10)
 
-Data de Entrega: 18/05 (nota cheia)
-Depois disso o trabalho será desconsiderado.
-Deve ser enviado por email (cidcleyifce@gmail.com) o link do Google drive com os códigos fontes
-compactados em um único arquivo ou link do GitHub. No assunto do email deve conter o texto
-“Projeto Tuplas”.
+## Trabalho Individual
+
+## Data de Entrega: 28/06
+
+Deve ser enviado por email (cidcleyifce@gmail.com) o link do Google drive com os
+códigos fontes compactados em um único arquivo ou link do GitHub. No assunto do
+email deve conter o texto “Projeto Final”.
+
+Observações:
+TODOS os trabalhos só serão aceitos se apresentados pessoalmente pelo aluno
+na data final de entrega ou, em casos excepcionais, a combinar com o professor.
+∑ TODOS os trabalhos só serão recebidos por email até às 13h da data de entrega.
+∑ Não serão aceitos trabalhos enviados de qualquer outra forma.
+∑ Devem ser entregues TODOS os códigos.
+∑ Deverá ser entregue, se a linguagem de programação permitir, um código
+executável (.jar, .exe, etc).
