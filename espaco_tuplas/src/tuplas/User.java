@@ -7,7 +7,6 @@ import java.util.List;
 
 public class User implements Entry {
     public Integer userId;
-    public Integer ambienteId;
     public String username = "user";
     List<Message> recievideMessages = new ArrayList<Message>();
 
@@ -20,4 +19,5 @@ public class User implements Entry {
         this.username += id.toString();
 
     }
+
 }

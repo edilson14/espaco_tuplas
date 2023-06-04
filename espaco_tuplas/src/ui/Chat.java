@@ -1,46 +1,38 @@
 package ui;
 
-import config.SpaceConfig;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Locale;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
+import config.SpaceConfig;
+import tuplas.Message;
+import tuplas.User;
 
 public class Chat extends JFrame {
     private SpaceConfig spaceConfig;
     private JTextArea chatArea;
-    private JTextArea  messageArea;
-    public Chat(){
+    private JTextArea messageArea;
+    private JPanel panel = new JPanel();
+    private User currentUser;
+    private User destinyUser;
+
+    public Chat() {
         setTitle("Chat de Mensagens");
-        spaceConfig = SpaceConfig.getInstance();
+        createUser();
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(400, 300);
-
-        JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
-
-        chatArea = new JTextArea();
-        chatArea.setEditable(false);
-        JScrollPane chatScrollPane = new JScrollPane(chatArea);
-        panel.add(chatScrollPane, BorderLayout.CENTER);
-
-        messageArea = new JTextArea(3, 1);
-        JScrollPane messageScrollPane = new JScrollPane(messageArea);
-        panel.add(messageScrollPane, BorderLayout.PAGE_END);
-
-        JButton sendButton = new JButton("Enviar");
-        sendButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String message = messageArea.getText();
-                appendMessage("Você: " + message);
-                messageArea.setText("");
-            }
-        });
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.add(sendButton);
-        panel.add(buttonPanel, BorderLayout.LINE_END);
+        createMessaArea();
+        sendMessage();
         add(panel);
         setVisible(true);
     }
@@ -48,5 +40,66 @@ public class Chat extends JFrame {
     public void appendMessage(String message) {
         chatArea.append(message + "\n");
     }
+
+
+    private void sendMessage() {
+        JButton sendButton = new JButton("Enviar");
+        sendButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (destinyUser == null) {
+                    destinyUser = spaceConfig.findOtherUser(currentUser);
+                }
+                String message = messageArea.getText();
+                if (!message.isBlank()) {
+                    Message newMessage = new Message(message, currentUser, destinyUser);
+                    spaceConfig.sendMessage(newMessage);
+                    appendMessage(currentUser.username.toUpperCase(Locale.ROOT) + ": " + message);
+                    messageArea.setText("");
+                }
+            }
+        });
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        buttonPanel.add(sendButton);
+        panel.add(buttonPanel, BorderLayout.LINE_END);
+    }
+
+    private void createMessaArea() {
+        chatArea = new JTextArea();
+        chatArea.setEditable(false);
+        JScrollPane chatScrollPane = new JScrollPane(chatArea);
+        panel.add(chatScrollPane, BorderLayout.CENTER);
+        messageArea = new JTextArea(3, 1);
+        JScrollPane messageScrollPane = new JScrollPane(messageArea);
+        panel.add(messageScrollPane, BorderLayout.PAGE_END);
+    }
+
+    private void createUser() {
+        spaceConfig = SpaceConfig.getInstance();
+        currentUser = spaceConfig.createUser();
+        Thread thread = new Thread(listenMessages);
+        thread.start();
+    }
+
+
+    Runnable listenMessages = new Runnable() {
+        @Override
+        public void run() {
+            while (true) {
+                Message incomingMessage = new Message();
+                incomingMessage.reciever = currentUser;
+                try {
+                    Message recievied = (Message) spaceConfig.space.take(incomingMessage, null, 500);
+                    if (recievied != null) {
+                        appendMessage(recievied.sender.username.toUpperCase(Locale.ROOT) + ": " + recievied.content);
+                        recievied = null;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("Algo deu errado lendo mensagens");
+                }
+            }
+        }
+    };
 
 }
