@@ -2,11 +2,13 @@ package config;
 
 import net.jini.core.lease.Lease;
 import net.jini.space.JavaSpace;
-import tuplas.Message;
-import tuplas.User;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import tuplas.Espiao;
+import tuplas.Message;
+import tuplas.User;
 
 
 public class SpaceConfig {
@@ -43,6 +45,29 @@ public class SpaceConfig {
         } catch (Exception exception) {
             exception.printStackTrace();
             System.out.println("Algo deu errado!");
+        }
+    }
+
+    public void setSpie(Espiao espiao){
+        try{
+            space.write(espiao,null,Lease.FOREVER);
+            System.out.println("Espião adicionado a rede");
+        }catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Algo deu errado adicionando espiao");
+        }
+    }
+
+    public  void addPalavraSuspeita(Espiao espiao,String palavraSuspeita){
+        try {
+            Espiao espiao1 = (Espiao) space.take(espiao,null,Lease.FOREVER);
+            if(espiao1 != null){
+                espiao1.palavrasSuspeitas.add(palavraSuspeita);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+            System.out.println("Algo deu errado registrando palavra");
         }
     }
 

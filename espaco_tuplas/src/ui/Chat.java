@@ -6,13 +6,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Locale;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import config.SpaceConfig;
+import tuplas.Espiao;
 import tuplas.Message;
 import tuplas.User;
 
@@ -23,6 +28,8 @@ public class Chat extends JFrame {
     private JPanel panel = new JPanel();
     private User currentUser;
     private User destinyUser;
+    private Espiao espiao = new Espiao();
+    private DefaultListModel<String> palavrasSuspeitas = new DefaultListModel<String>();
 
     public Chat() {
         setTitle("Chat de Mensagens");
@@ -59,8 +66,19 @@ public class Chat extends JFrame {
                 }
             }
         });
+
+        JButton suspeciousWords = new JButton("Palavras Supeitas");
+        suspeciousWords.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                showSuspeciousWords();
+            }
+        });
+
+
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonPanel.add(sendButton);
+        buttonPanel.add(suspeciousWords);
         panel.add(buttonPanel, BorderLayout.LINE_END);
     }
 
@@ -77,11 +95,46 @@ public class Chat extends JFrame {
     private void createUser() {
         spaceConfig = SpaceConfig.getInstance();
         currentUser = spaceConfig.createUser();
+        spaceConfig.setSpie(espiao);
         Thread thread = new Thread(listenMessages);
+        thread.setDaemon(true);
         thread.start();
     }
 
 
+    //MODAL PARA APRESENTAR AS PALAVRAS SUSPEITAS E CADASTRAR NOVAS
+    public void showSuspeciousWords() {
+        JDialog dialog = new JDialog(this, "Palavras Suspeitas", true);
+        dialog.setLayout(new BorderLayout());
+
+        JList<String> _palavrasSupeitas = new JList<String>(palavrasSuspeitas);
+        JScrollPane scrollPane = new JScrollPane(_palavrasSupeitas);
+        dialog.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JButton addButton = new JButton("Adicionar Palavra Suspeita");
+        addButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String newWord = JOptionPane.showInputDialog(dialog, "Digite a nova palavra suspeita:");
+                if (newWord != null && !newWord.isEmpty()) {
+                    spaceConfig.addPalavraSuspeita(espiao, newWord);
+                    palavrasSuspeitas.addElement(newWord);
+//                    model.addElement(newWord);
+                }
+            }
+        });
+        buttonPanel.add(addButton);
+        dialog.add(buttonPanel, BorderLayout.PAGE_END);
+
+
+        dialog.pack();
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+    }
+
+
+    // FICAR ESCUTANDO AS MENSAGENS QUE CHEGAM DO OUTRO USUARIO
     Runnable listenMessages = new Runnable() {
         @Override
         public void run() {

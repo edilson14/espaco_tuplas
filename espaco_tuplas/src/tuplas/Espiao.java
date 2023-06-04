@@ -7,8 +7,8 @@ import java.util.List;
 
 public class Espiao implements Entry {
 
-    List<String> palavrasSuspeitas = new ArrayList<>();
-    List<Message> mensagensSuspeitas = new ArrayList<>();
+   public List<String> palavrasSuspeitas = new ArrayList<>();
+    public List<Message> mensagensSuspeitas = new ArrayList<>();
 
     public Espiao(){
 
