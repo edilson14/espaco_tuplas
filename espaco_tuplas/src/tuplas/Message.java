@@ -6,6 +6,7 @@ public class Message implements Entry {
     public  String content;
     public User sender;
     public User reciever;
+    public Boolean monitored = false;
 
 
     public Message(){}

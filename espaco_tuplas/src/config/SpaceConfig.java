@@ -48,24 +48,24 @@ public class SpaceConfig {
         }
     }
 
-    public void setSpie(Espiao espiao){
-        try{
-            space.write(espiao,null,Lease.FOREVER);
+    public void setSpie(Espiao espiao) {
+        try {
+            space.write(espiao, null, Lease.FOREVER);
             System.out.println("Espião adicionado a rede");
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Algo deu errado adicionando espiao");
         }
     }
 
-    public  void addPalavraSuspeita(Espiao espiao,String palavraSuspeita){
+    public void addPalavraSuspeita(Espiao espiao, String palavraSuspeita) {
         try {
-            Espiao espiao1 = (Espiao) space.take(espiao,null,Lease.FOREVER);
-            if(espiao1 != null){
+            Espiao espiao1 = (Espiao) space.take(espiao, null, 500);
+            if (espiao1 != null) {
                 espiao1.palavrasSuspeitas.add(palavraSuspeita);
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             System.out.println("Algo deu errado registrando palavra");
         }
@@ -118,5 +118,19 @@ public class SpaceConfig {
         }
     }
 
+
+    public Espiao getEspiao(Espiao espiao) {
+        try {
+            Espiao newEspiao = (Espiao) space.take(espiao, null, 500);
+            if (newEspiao != null) {
+
+                return newEspiao;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Algo deu errado pegando espiao");
+        }
+        return null;
+    }
 
 }
