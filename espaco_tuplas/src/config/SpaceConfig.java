@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import tuplas.Espiao;
-import tuplas.Message;
+import tuplas.Mensagem;
 import tuplas.User;
 
 
@@ -108,7 +108,7 @@ public class SpaceConfig {
         return new User(lastUserId);
     }
 
-    public void sendMessage(Message message) {
+    public void sendMessage(Mensagem message) {
         try {
             space.write(message, null, Lease.FOREVER);
             System.out.println("Mensagem enviado!");

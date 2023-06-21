@@ -12,7 +12,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import config.SpaceConfig;
-import tuplas.Message;
+import tuplas.Mensagem;
 import tuplas.User;
 
 public class Chat extends JFrame {
@@ -51,7 +51,7 @@ public class Chat extends JFrame {
                 }
                 String message = messageArea.getText();
                 if (!message.isBlank()) {
-                    Message newMessage = new Message(message, currentUser, destinyUser);
+                    Mensagem newMessage = new Mensagem(message, currentUser, destinyUser);
                     spaceConfig.sendMessage(newMessage);
                     appendMessage(currentUser.username.toUpperCase(Locale.ROOT) + ": " + message);
                     messageArea.setText("");
@@ -84,19 +84,16 @@ public class Chat extends JFrame {
     }
 
 
-
-
-
     // FICAR ESCUTANDO AS MENSAGENS QUE CHEGAM DO OUTRO USUARIO
     Runnable listenMessages = new Runnable() {
         @Override
         public void run() {
             while (true) {
-                Message incomingMessage = new Message();
+                Mensagem incomingMessage = new Mensagem();
                 incomingMessage.reciever = currentUser;
                 incomingMessage.monitored = true;
                 try {
-                    Message recievied = (Message) spaceConfig.space.take(incomingMessage, null, 500);
+                    Mensagem recievied = (Mensagem) spaceConfig.space.take(incomingMessage, null, 500);
                     if (recievied != null) {
 //                        handleSuspeciousword(recievied);
                         appendMessage(recievied.sender.username.toUpperCase(Locale.ROOT) + ": " + recievied.content);

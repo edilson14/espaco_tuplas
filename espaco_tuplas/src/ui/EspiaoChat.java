@@ -13,16 +13,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import config.SocketServer;
 import config.SpaceConfig;
 import tuplas.Espiao;
-import tuplas.Message;
+import tuplas.Mensagem;
 
 public class EspiaoChat extends JFrame {
     private SpaceConfig spaceConfig;
     private Espiao espiao = new Espiao();
     private JPanel panel = new JPanel();
     private JTextArea words;
-    private List<String> palavrasSuspeitas =new ArrayList<String>();
+    private List<String> palavrasSuspeitas = new ArrayList<String>();
+    private SocketServer socketServer = new SocketServer();
 
     public EspiaoChat() {
         setTitle("Palavras Suspeitas");
@@ -32,24 +34,25 @@ public class EspiaoChat extends JFrame {
         words.setEditable(false);
         panel.setLayout(new BorderLayout());
         JScrollPane scrollPane = new JScrollPane(words);
-        panel.add(scrollPane,BorderLayout.CENTER);
+        panel.add(scrollPane, BorderLayout.CENTER);
         JPanel buttonPanel = new JPanel();
-        JButton suspeitas =new JButton("Nova Palavra");
+        JButton suspeitas = new JButton("Nova Palavra");
         buttonPanel.add(suspeitas);
 
         suspeitas.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                String newWord = JOptionPane.showInputDialog("Digite a nova palavra suspeita" );
+                String newWord = JOptionPane.showInputDialog("Digite a nova palavra suspeita");
                 if (newWord != null && !newWord.isEmpty()) {
                     spaceConfig.addPalavraSuspeita(espiao, newWord);
+                    espiao.palavrasSuspeitas.add(newWord);
                     words.append(newWord + "\n");
                 }
 
             }
         });
 
-        panel.add(buttonPanel,BorderLayout.PAGE_END);
+        panel.add(buttonPanel, BorderLayout.PAGE_END);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(500, 200);
         add(panel);
@@ -68,15 +71,16 @@ public class EspiaoChat extends JFrame {
         }
     }
 
-    private void handleSuspeciousword(Message message) {
+    private void handleSuspeciousword(Mensagem message) {
         if (includesSupeciousWords(message.content)) {
-            Espiao _espiao = spaceConfig.getEspiao(espiao);
             //TODO implementar metodo para enviar a mensagem via websocket
+            socketServer.senMessage( message);
 
         }
     }
 
     private boolean includesSupeciousWords(String messageContent) {
+
         for (String word : espiao.palavrasSuspeitas) {
             if (messageContent.toLowerCase().contains(word.toLowerCase())) {
                 return true;
@@ -89,19 +93,19 @@ public class EspiaoChat extends JFrame {
     Runnable listenMessages = new Runnable() {
         @Override
         public void run() {
-            while (true){
-                Message messageToMonitore = new Message();
+            while (true) {
+                Mensagem messageToMonitore = new Mensagem();
                 messageToMonitore.monitored = false;
 
-                try{
-                    Message recevied = (Message) spaceConfig.space.take(messageToMonitore,null,500);
-                    if(recevied != null){
+                try {
+                    Mensagem recevied = (Mensagem) spaceConfig.space.take(messageToMonitore, null, 500);
+                    if (recevied != null) {
                         handleSuspeciousword(recevied);
                         recevied.monitored = true;
                         spaceConfig.sendMessage(recevied);
 
                     }
-                } catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

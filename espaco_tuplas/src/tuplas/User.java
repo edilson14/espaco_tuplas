@@ -8,13 +8,13 @@ import java.util.List;
 public class User implements Entry {
     public Integer userId;
     public String username = "user";
-    List<Message> recievideMessages = new ArrayList<Message>();
+    List<Mensagem> recievideMessages = new ArrayList<Mensagem>();
 
-    public User(){
+    public User() {
 
     }
 
-    public User(Integer id){
+    public User(Integer id) {
         this.userId = id;
         this.username += id.toString();
 
