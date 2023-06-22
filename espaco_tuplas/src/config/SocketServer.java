@@ -2,6 +2,7 @@ package config;
 
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.camel.json.simple.JsonObject;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -29,7 +30,7 @@ public class SocketServer {
         try {
             conn = connFactory.createConnection();
             sess = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            dest = sess.createTopic("mensagens-supeitas");
+            dest = sess.createTopic("mensagens-suspeitas");
             System.out.println("Conectado com sucesso");
         } catch (Exception e) {
             System.out.println("Algo deu errado conectando");
@@ -39,8 +40,13 @@ public class SocketServer {
 
     public void senMessage(Mensagem message) {
         try {
+
             MessageProducer prod = sess.createProducer(dest);
-            Message msg = sess.createTextMessage(message.toString());
+            JsonObject messageToSend = new JsonObject();
+            messageToSend.put("sender",message.sender.username);
+            messageToSend.put("message",message.content);
+            messageToSend.put("reciever",message.reciever.username);
+            Message msg = sess.createTextMessage(messageToSend.toString());
             prod.send(msg);
             System.out.println("mensagem suspeita enviada para o topico");
 
